@@ -1,0 +1,73 @@
+
+<div class="max-w-2xl mx-auto space-y-6">
+  <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+    <h2 class="text-xl font-semibold text-cyan-400">Today's Workout</h2>
+    <p class="text-gray-400">{{ today | date:'fullDate' }}</p>
+  </div>
+
+  <div class="space-y-4">
+    @for (exercise of workoutLog().exercises; track trackById($index, exercise)) {
+      <div class="bg-gray-800 rounded-xl p-4 shadow-lg animate-fade-in">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-lg font-bold text-white">{{ exercise.name }}</h3>
+          <button (click)="removeExercise(exercise.id)" class="text-red-400 hover:text-red-300 transition-colors">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        
+        <div class="space-y-2">
+          <div class="grid grid-cols-12 gap-2 text-sm text-gray-400 font-semibold">
+            <div class="col-span-2 text-center">Set</div>
+            <div class="col-span-4 text-center">Weight (kg)</div>
+            <div class="col-span-4 text-center">Reps</div>
+            <div class="col-span-2"></div>
+          </div>
+          
+          @for (set of exercise.sets; track trackByIndex($index, set); let setIndex = $index) {
+            <div class="grid grid-cols-12 gap-2 items-center">
+              <div class="col-span-2 text-center font-semibold">{{ setIndex + 1 }}</div>
+              <div class="col-span-4">
+                <input type="number" [(ngModel)]="set.weight" placeholder="0" class="w-full bg-gray-700 text-white p-2 rounded-md border border-gray-600 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-center">
+              </div>
+              <div class="col-span-4">
+                <input type="number" [(ngModel)]="set.reps" placeholder="0" class="w-full bg-gray-700 text-white p-2 rounded-md border border-gray-600 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none text-center">
+              </div>
+              <div class="col-span-2 text-center">
+                <button (click)="removeSet(exercise.id, setIndex)" [disabled]="exercise.sets.length <= 1" class="text-gray-500 hover:text-red-400 disabled:opacity-30 disabled:hover:text-gray-500 transition-colors">
+                  <i class="fas fa-times-circle"></i>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <button (click)="addSet(exercise.id)" class="w-full mt-4 bg-gray-700 hover:bg-gray-600 text-cyan-400 font-semibold py-2 px-4 rounded-md transition-colors">
+          <i class="fas fa-plus mr-2"></i>Add Set
+        </button>
+      </div>
+    } @empty {
+      <div class="text-center py-10 px-4 bg-gray-800 rounded-xl">
+        <p class="text-gray-400">No exercises added yet.</p>
+        <p class="text-gray-500 text-sm">Start by adding an exercise below.</p>
+      </div>
+    }
+  </div>
+
+  <div class="bg-gray-800 rounded-xl p-4 shadow-lg sticky bottom-[76px] md:bottom-4">
+    <div class="flex gap-2">
+      <input type="text" [(ngModel)]="newExerciseName" (keyup.enter)="addExercise()" placeholder="e.g., Bench Press" class="flex-grow bg-gray-700 text-white p-3 rounded-md border border-gray-600 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none">
+      <button (click)="addExercise()" class="bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-bold p-3 rounded-md transition-colors">
+        <i class="fas fa-plus"></i>
+        <span class="hidden md:inline ml-2">Add Exercise</span>
+      </button>
+    </div>
+  </div>
+
+  @if (workoutLog().exercises.length > 0) {
+    <div class="text-center pb-16">
+      <button (click)="saveWorkout()" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105">
+        <i class="fas fa-check-circle mr-2"></i>Save Workout
+      </button>
+    </div>
+  }
+</div>
